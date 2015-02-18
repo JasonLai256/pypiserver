@@ -35,6 +35,9 @@ setup(name="pypiserver",
       url="https://github.com/schmir/pypiserver",
       maintainer="Ralf Schmitt",
       maintainer_email="ralf@systemexit.de",
+      install_requires=[
+          'waitress',
+      ],
       classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Environment :: Web Environment",

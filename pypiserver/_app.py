@@ -13,6 +13,8 @@ else:
 from bottle import static_file, redirect, request, response, HTTPError, Bottle
 from pypiserver import __version__
 from pypiserver.core import listdir, find_packages, store, get_prefixes, exists
+from pypiserver.auth import AuthHandler
+
 
 log = logging.getLogger('pypiserver.http')
 packages = None
@@ -91,7 +93,10 @@ app = Bottle()
 @app.hook('before_request')
 def log_request():
     log.info(config.log_req_frmt, request.environ)
-
+    if request.path != '/authentication':
+        is_ok = AuthHandler.check_ip_auth(request)
+        if not is_ok:
+            raise HTTPError(403, output="Forbidden")
 
 @app.hook('after_request')
 def log_response():
@@ -111,6 +116,11 @@ def log_error(http_error):
 @app.route("/favicon.ico")
 def favicon():
     return HTTPError(404)
+
+
+@app.route('/authentication')
+def auth():
+    AuthHandler.verify_auth(request)
 
 
 @app.route('/')
